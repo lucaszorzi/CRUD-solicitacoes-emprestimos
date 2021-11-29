@@ -11,7 +11,7 @@ router.post('/add', crudController.add);
 
 router.get('/list', crudController.list);
 
-router.delete('/delete/:id', crudController.delete);
+router.delete('/delete/:id', crudController.del);
 
 router.put('/edit/:id', crudController.edit);
 

@@ -1,26 +1,26 @@
 const database = require('../db');
 const Solicitacao = require('../models/model');
 
-exports.list = async (req, res, next) => {
+async function list(req, res, next) {
     try {
-      const solicitacoes = await Solicitacao.findAll();
-      console.log(solicitacoes);
-      return res.json(solicitacoes);
-    } catch (error) {
-      console.log(error);
-      return res.status(400).json({ error });
-    }
+        const solicitacoes = await Solicitacao.findAll();
+        console.log(solicitacoes);
+        return res.json(solicitacoes);
+      } catch (error) {
+        console.log(error);
+        return res.status(400).json({ error });
+      }
 }
 
-exports.add = async (req, res, next) => {
+async function add (req, res, next) {
     try {
         //sync as tabelas do db e model
         const result = await database.sync();
         console.log(result);
-
+        
         VerificacaoCPF(req.body.cpf);
         VerificacaoCNPJ(req.body.cnpj);
-    
+            
         const resultCreate = await Solicitacao.create({
             cnpj: req.body.cnpj,
             valor_emprestimo: req.body.valor_emprestimo,
@@ -31,18 +31,17 @@ exports.add = async (req, res, next) => {
             telefone: req.body.telefone,
             email: req.body.email
         })
-        console.log(resultCreate);
-        return res.json(resultCreate);
-
-    } catch (error) {
-        console.log(error);
-        return res.status(400).json({ error });
-    }
+            console.log(resultCreate);
+            return res.json(resultCreate);
+        
+        } catch (error) {
+            console.log(error);
+            return res.status(400).json({ error });
+        }
 }
 
-exports.delete = async (req, res, next) => {
+async function del (req, res, next) {
     const id = req.params.id;
-
     try {
         const solicitacao = await Solicitacao.findByPk(id);
         solicitacao.destroy();
@@ -54,9 +53,7 @@ exports.delete = async (req, res, next) => {
     }
 }
 
-
-exports.edit = async (req, res, next) => {
-
+async function edit (req, res, next) {
     VerificacaoCPF(req.body.cpf);
     VerificacaoCNPJ(req.body.cnpj);
 
@@ -84,8 +81,7 @@ exports.edit = async (req, res, next) => {
     }
 }
 
-
-function VerificacaoCPF(cpf) {
+async function VerificacaoCPF(cpf) {
     
     cpf = cpf.replace(/[^\d]+/g,'');	
 	if(cpf == '') throw 'CPF inválido';
@@ -126,7 +122,7 @@ function VerificacaoCPF(cpf) {
 	return true;  
 }
 
-function VerificacaoCNPJ(cnpj) {
+async function VerificacaoCNPJ(cnpj) {
  
     cnpj = cnpj.replace(/[^\d]+/g,'');
     if(cnpj == '')  throw 'CNPJ inválido';
@@ -173,4 +169,13 @@ function VerificacaoCNPJ(cnpj) {
         throw 'CNPJ inválido';
            
     return true;
+}
+
+module.exports = {
+    add,
+    list,
+    edit,
+    del,
+    VerificacaoCPF,
+    VerificacaoCNPJ,
 }
